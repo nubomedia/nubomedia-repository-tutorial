@@ -23,8 +23,6 @@ import org.springframework.web.socket.config.annotation.EnableWebSocket;
 import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
 import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
 
-import de.fhg.fokus.nubomedia.PaasRepositoryProvider;
-
 /**
  * WebRTC in loopback with recording in repository capabilities main class.
  *
@@ -47,8 +45,7 @@ public class RepositoryApp implements WebSocketConfigurer {
 
   @Bean
   public RepositoryClient repositoryServiceProvider() {
-    PaasRepositoryProvider paasRepositoryProvider = new PaasRepositoryProvider();
-    return RepositoryClientProvider.create(paasRepositoryProvider.getRepositoryUrl());
+    return RepositoryClientProvider.create();
   }
 
   @Bean
