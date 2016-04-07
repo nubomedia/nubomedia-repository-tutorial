@@ -50,7 +50,7 @@ public class RepositoryHandler extends TextWebSocketHandler {
       JsonObject jsonMessage = new GsonBuilder().create().fromJson(message.getPayload(),
           JsonObject.class);
 
-      log.debug("Incoming message: {}", jsonMessage);
+      log.info("Incoming message: {}", jsonMessage);
 
       switch (jsonMessage.get("id").getAsString()) {
       case "start":
@@ -163,7 +163,9 @@ public class RepositoryHandler extends TextWebSocketHandler {
 
   public synchronized void sendMessage(WebSocketSession session, TextMessage message) {
     try {
+      log.info("Sending message {} in session {}", message, session.getId());
       session.sendMessage(message);
+
     } catch (IOException e) {
       log.error("Exception sending message", e);
     }

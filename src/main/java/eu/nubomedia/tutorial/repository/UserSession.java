@@ -73,7 +73,8 @@ public class UserSession {
   public void startRecording(WebSocketSession session, String sdpOffer) {
     // Media pipeline
     mediaPipeline = kurentoClient.createMediaPipeline();
-    log.info("Created Media Pipeline {} (session {})", mediaPipeline.getId(), sessionId);
+    log.info("Created Media Pipeline for recording {} (session {})", mediaPipeline.getId(),
+        sessionId);
 
     // Repository item (recorder)
     try {
@@ -110,6 +111,8 @@ public class UserSession {
   public void playRecording(final WebSocketSession session, String sdpOffer) {
     // Media pipeline
     mediaPipeline = kurentoClient.createMediaPipeline();
+    log.info("Created Media Pipeline for playing {} (session {})", mediaPipeline.getId(),
+        sessionId);
 
     // Repository item (player)
     RepositoryItemPlayer repositoryItemPlayer = new RepositoryItemPlayer();
@@ -125,7 +128,7 @@ public class UserSession {
     playerEndpoint.addErrorListener(new EventListener<ErrorEvent>() {
       @Override
       public void onEvent(ErrorEvent event) {
-        log.debug("ErrorEvent for session '{}': {}", session.getId(), event.getDescription());
+        log.info("ErrorEvent for session {}: {}", session.getId(), event.getDescription());
 
         repositoryHandler.sendPlayEnd(session);
         mediaPipeline.release();
@@ -134,7 +137,7 @@ public class UserSession {
     playerEndpoint.addEndOfStreamListener(new EventListener<EndOfStreamEvent>() {
       @Override
       public void onEvent(EndOfStreamEvent event) {
-        log.debug("EndOfStreamEvent for session '{}'", session.getId());
+        log.info("EndOfStreamEvent for session {}", session.getId());
 
         repositoryHandler.sendPlayEnd(session);
         mediaPipeline.release();
@@ -150,6 +153,8 @@ public class UserSession {
 
   public void performWebRtcNegotiation(final WebSocketSession session, String sdpOffer,
       String messageResponse) {
+    log.info("Starting WebRTC negotiation in session {}", sessionId);
+
     // Subscribe to ICE candidates
     webRtcEndpoint.addOnIceCandidateListener(new EventListener<OnIceCandidateEvent>() {
       @Override
