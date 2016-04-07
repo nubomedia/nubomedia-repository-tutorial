@@ -34,13 +34,8 @@ import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry
 public class RepositoryApp implements WebSocketConfigurer {
 
   @Bean
-  public RepositoryHandler handler() {
+  public RepositoryHandler repositoryHandler() {
     return new RepositoryHandler();
-  }
-
-  @Override
-  public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-    registry.addHandler(handler(), "/repository");
   }
 
   @Bean
@@ -48,9 +43,9 @@ public class RepositoryApp implements WebSocketConfigurer {
     return RepositoryClientProvider.create();
   }
 
-  @Bean
-  public UserRegistry registry() {
-    return new UserRegistry();
+  @Override
+  public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
+    registry.addHandler(repositoryHandler(), "/repository");
   }
 
   public static void main(String[] args) throws Exception {
