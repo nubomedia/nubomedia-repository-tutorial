@@ -67,13 +67,13 @@ public class UserSession {
     this.sessionId = sessionId;
     this.repositoryClient = repositoryClient;
     this.repositoryHandler = repositoryHandler;
-
-    // One KurentoClient instance per session
-    kurentoClient = KurentoClient.create();
-    log.info("Created kurentoClient (session {})", sessionId);
   }
 
-  public void startRecording(WebSocketSession session, String sdpOffer) {
+  public String startRecording(WebSocketSession session, String sdpOffer) {
+    // KurentoClient
+    kurentoClient = KurentoClient.create();
+    log.info("Created kurentoClient (session {})", sessionId);
+
     // Media pipeline
     mediaPipeline = kurentoClient.createMediaPipeline();
     log.info("Created Media Pipeline for recording {} (session {})", mediaPipeline.getId(),
@@ -105,13 +105,19 @@ public class UserSession {
     webRtcEndpoint.connect(recorderEndpoint);
 
     // WebRTC negotiation
-    performWebRtcNegotiation(session, sdpOffer, "startResponse");
+    String sdpAnswer = performWebRtcNegotiation(session, sdpOffer);
 
     // Start recording
     recorderEndpoint.record();
+
+    return sdpAnswer;
   }
 
-  public void playRecording(final WebSocketSession session, String sdpOffer) {
+  public String playRecording(final WebSocketSession session, String sdpOffer) {
+    // KurentoClient
+    kurentoClient = KurentoClient.create();
+    log.info("Created kurentoClient (session {})", sessionId);
+
     // Media pipeline
     mediaPipeline = kurentoClient.createMediaPipeline();
     log.info("Created Media Pipeline for playing {} (session {})", mediaPipeline.getId(),
@@ -154,7 +160,7 @@ public class UserSession {
         log.info("ErrorEvent for session {}: {}", session.getId(), event.getDescription());
 
         repositoryHandler.sendPlayEnd(session);
-        mediaPipeline.release();
+        release();
       }
     });
     playerEndpoint.addEndOfStreamListener(new EventListener<EndOfStreamEvent>() {
@@ -163,19 +169,20 @@ public class UserSession {
         log.info("EndOfStreamEvent for session {}", session.getId());
 
         repositoryHandler.sendPlayEnd(session);
-        mediaPipeline.release();
+        release();
       }
     });
 
     // WebRTC negotiation
-    performWebRtcNegotiation(session, sdpOffer, "playResponse");
+    String sdpAnswer = performWebRtcNegotiation(session, sdpOffer);
 
     // Start playing
     playerEndpoint.play();
+
+    return sdpAnswer;
   }
 
-  public void performWebRtcNegotiation(final WebSocketSession session, String sdpOffer,
-      String messageResponse) {
+  public String performWebRtcNegotiation(final WebSocketSession session, String sdpOffer) {
     log.info("Starting WebRTC negotiation in session {}", sessionId);
 
     // Subscribe to ICE candidates
@@ -191,19 +198,17 @@ public class UserSession {
 
     // SDP negotiation
     String sdpAnswer = webRtcEndpoint.processOffer(sdpOffer);
-    JsonObject response = new JsonObject();
-    response.addProperty("id", messageResponse);
-    response.addProperty("sdpAnswer", sdpAnswer);
-    repositoryHandler.sendMessage(session, new TextMessage(response.toString()));
 
     // Gather ICE candidates
     webRtcEndpoint.gatherCandidates();
+
+    return sdpAnswer;
   }
 
   public void stopRecording() {
     recorderEndpoint.stop();
-    mediaPipeline.release();
     stopTimestamp = System.currentTimeMillis();
+    release();
   }
 
   public void addCandidate(JsonObject jsonCandidate) {
@@ -214,10 +219,10 @@ public class UserSession {
 
   public void stopPlay() {
     playerEndpoint.stop();
-    mediaPipeline.release();
+    release();
   }
 
-  public void destroy() {
+  public void release() {
     log.info("Releasing media pipeline {} (session {})", mediaPipeline.getId(), sessionId);
     mediaPipeline.release();
 

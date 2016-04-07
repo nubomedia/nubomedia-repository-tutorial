@@ -91,7 +91,13 @@ public class RepositoryHandler extends TextWebSocketHandler {
 
     // Media logic for recording
     String sdpOffer = jsonMessage.get("sdpOffer").getAsString();
-    user.startRecording(session, sdpOffer);
+    String sdpAnswer = user.startRecording(session, sdpOffer);
+
+    // Response message
+    JsonObject response = new JsonObject();
+    response.addProperty("id", "startResponse");
+    response.addProperty("sdpAnswer", sdpAnswer);
+    sendMessage(session, new TextMessage(response.toString()));
   }
 
   private void stop(WebSocketSession session) {
@@ -106,8 +112,13 @@ public class RepositoryHandler extends TextWebSocketHandler {
     if (user != null) {
       // Media logic for playing
       String sdpOffer = jsonMessage.get("sdpOffer").getAsString();
+      String sdpAnswer = user.playRecording(session, sdpOffer);
 
-      user.playRecording(session, sdpOffer);
+      // Response message
+      JsonObject response = new JsonObject();
+      response.addProperty("id", "playResponse");
+      response.addProperty("sdpAnswer", sdpAnswer);
+      sendMessage(session, new TextMessage(response.toString()));
     }
   }
 
@@ -157,7 +168,7 @@ public class RepositoryHandler extends TextWebSocketHandler {
   private void release(WebSocketSession session) {
     UserSession user = users.remove(session.getId());
     if (user != null) {
-      user.destroy();
+      user.release();
     }
   }
 
