@@ -40,35 +40,41 @@ window.onbeforeunload = function() {
 function setState(nextState) {
 	switch (nextState) {
 	case NO_CALL:
-		$('#start').attr('disabled', false);
-		$('#stop').attr('disabled', true);
-		$('#play').attr('disabled', true);
+		enableButton('#start', 'start()');
+		disableButton('#stop');
+		disableButton('#play');
 		break;
 	case DISABLED:
-		$('#start').attr('disabled', true);
-		$('#stop').attr('disabled', true);
-		$('#play').attr('disabled', true);
+		disableButton('#start');
+		disableButton('#stop');
+		disableButton('#play');
 		break;
 	case IN_CALL:
-		$('#start').attr('disabled', true);
-		$('#stop').attr('disabled', false);
-		$('#play').attr('disabled', true);
+	case IN_PLAY:
+		disableButton('#start');
+		enableButton('#stop', 'stop()');
+		disableButton('#play');
 		break;
 	case POST_CALL:
-		$('#start').attr('disabled', false);
-		$('#stop').attr('disabled', true);
-		$('#play').attr('disabled', false);
+		enableButton('#start', 'start()');
+		disableButton('#stop');
+		enableButton('#play', 'play()');
 		break;
-	case IN_PLAY:
-		$('#start').attr('disabled', true);
-		$('#stop').attr('disabled', false);
-		$('#play').attr('disabled', true);
-		break;	
 	default:
 		onError('Unknown state ' + nextState);
 		return;
 	}
 	state = nextState;
+}
+
+function enableButton(id, onclick) {
+	$(id).attr('disabled', false);
+	$(id).attr('onclick', onclick);
+}
+
+function disableButton(id) {
+	$(id).attr('disabled', true);
+	$(id).removeAttr('onclick');
 }
 
 ws.onmessage = function(message) {
@@ -205,7 +211,6 @@ function onPlayOffer(error, offerSdp) {
 	}
 	sendMessage(message);
 }
-
 
 function playResponse(message) {
 	setState(IN_PLAY);
