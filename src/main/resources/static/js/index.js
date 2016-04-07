@@ -101,6 +101,10 @@ ws.onmessage = function(message) {
 				return console.error('Error adding candidate: ' + error);
 		});
 		break;
+	case 'notEnoughResources':
+		stop(false);
+		$('#resourcesDialog').modal('show');
+		break;
 	default:
 		setState(NO_CALL);
 		onError('Unrecognized message', parsedMessage);
