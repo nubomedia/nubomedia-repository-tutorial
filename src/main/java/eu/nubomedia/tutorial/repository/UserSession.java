@@ -47,6 +47,8 @@ import com.google.gson.JsonObject;
  */
 public class UserSession {
 
+  private static final int REPOSITORY_GUARD_TIME_MS = 10000;
+
   private final Logger log = LoggerFactory.getLogger(UserSession.class);
 
   private RepositoryHandler repositoryHandler;
@@ -58,6 +60,7 @@ public class UserSession {
   private PlayerEndpoint playerEndpoint;
   private RepositoryItemRecorder repositoryItemRecorder;
   private String sessionId;
+  private long stopTimestamp;
 
   public UserSession(String sessionId, RepositoryClient repositoryClient,
       RepositoryHandler repositoryHandler) {
@@ -84,7 +87,7 @@ public class UserSession {
     } catch (Exception e) {
       log.warn("Exception creating repositoryItemRecorder", e);
 
-      // This code is useful to try to run the demo in local
+      // This code is useful to run the demo in local
       repositoryItemRecorder = new RepositoryItemRecorder();
       String id = String.valueOf(System.currentTimeMillis());
       repositoryItemRecorder.setId(id);
@@ -115,9 +118,29 @@ public class UserSession {
         sessionId);
 
     // Repository item (player)
-    RepositoryItemPlayer repositoryItemPlayer = new RepositoryItemPlayer();
-    repositoryItemPlayer.setId(repositoryItemRecorder.getId());
-    repositoryItemPlayer.setUrl(repositoryItemRecorder.getUrl());
+    RepositoryItemPlayer repositoryItemPlayer = null;
+    try {
+
+      // Guard time for repository to finish storing media
+      long diff = System.currentTimeMillis() - stopTimestamp;
+      if (diff >= 0 && diff < REPOSITORY_GUARD_TIME_MS) {
+        log.info(
+            "Waiting for {}ms before requesting the repository read endpoint "
+                + "(requires {}ms before upload is considered terminated "
+                + "and only {}ms have passed)",
+            REPOSITORY_GUARD_TIME_MS - diff, REPOSITORY_GUARD_TIME_MS, diff);
+        Thread.sleep(REPOSITORY_GUARD_TIME_MS - diff);
+      }
+      repositoryItemPlayer = repositoryClient.getReadEndpoint(repositoryItemRecorder.getId());
+
+    } catch (Exception e) {
+      log.warn("Exception creating repositoryItemPlayer", e);
+
+      // This code is useful to run the demo in local
+      repositoryItemPlayer = new RepositoryItemPlayer();
+      repositoryItemPlayer.setId(repositoryItemRecorder.getId());
+      repositoryItemPlayer.setUrl(repositoryItemRecorder.getUrl());
+    }
 
     // Media logic
     webRtcEndpoint = new WebRtcEndpoint.Builder(mediaPipeline).build();
@@ -180,6 +203,7 @@ public class UserSession {
   public void stopRecording() {
     recorderEndpoint.stop();
     mediaPipeline.release();
+    stopTimestamp = System.currentTimeMillis();
   }
 
   public void addCandidate(JsonObject jsonCandidate) {

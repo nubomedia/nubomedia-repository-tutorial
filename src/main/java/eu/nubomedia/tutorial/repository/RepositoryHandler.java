@@ -163,7 +163,7 @@ public class RepositoryHandler extends TextWebSocketHandler {
 
   public synchronized void sendMessage(WebSocketSession session, TextMessage message) {
     try {
-      log.info("Sending message {} in session {}", message, session.getId());
+      log.info("Sending message {} in session {}", message.getPayload(), session.getId());
       session.sendMessage(message);
 
     } catch (IOException e) {
