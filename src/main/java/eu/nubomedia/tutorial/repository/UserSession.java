@@ -87,7 +87,7 @@ public class UserSession {
     } catch (Exception e) {
       log.warn("Exception creating repositoryItemRecorder", e);
 
-      // This code is useful to run the demo in local
+      // This code allows to run the demo in local without a repository server
       repositoryItemRecorder = new RepositoryItemRecorder();
       String id = String.valueOf(System.currentTimeMillis());
       repositoryItemRecorder.setId(id);
@@ -97,7 +97,7 @@ public class UserSession {
     log.info("Repository item id={}, url={}", repositoryItemRecorder.getId(),
         repositoryItemRecorder.getUrl());
 
-    // Media logic
+    // Media elements and connectivity
     webRtcEndpoint = new WebRtcEndpoint.Builder(mediaPipeline).build();
     recorderEndpoint = new RecorderEndpoint.Builder(mediaPipeline, repositoryItemRecorder.getUrl())
         .withMediaProfile(MediaProfileSpecType.WEBM).build();
@@ -142,13 +142,13 @@ public class UserSession {
     } catch (Exception e) {
       log.warn("Exception creating repositoryItemPlayer", e);
 
-      // This code is useful to run the demo in local
+      // This code allows to run the demo in local without a repository server
       repositoryItemPlayer = new RepositoryItemPlayer();
       repositoryItemPlayer.setId(repositoryItemRecorder.getId());
       repositoryItemPlayer.setUrl(repositoryItemRecorder.getUrl());
     }
 
-    // Media logic
+    // Media elements and connectivity
     webRtcEndpoint = new WebRtcEndpoint.Builder(mediaPipeline).build();
     playerEndpoint = new PlayerEndpoint.Builder(mediaPipeline, repositoryItemPlayer.getUrl())
         .build();
