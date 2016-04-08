@@ -42,6 +42,7 @@ public class RepositoryHandler extends TextWebSocketHandler {
   private RepositoryClient repositoryClient;
 
   private final Logger log = LoggerFactory.getLogger(RepositoryHandler.class);
+
   private final ConcurrentHashMap<String, UserSession> users = new ConcurrentHashMap<>();
 
   @Override
@@ -73,6 +74,7 @@ public class RepositoryHandler extends TextWebSocketHandler {
         error(session, "Invalid message with id " + jsonMessage.get("id").getAsString());
         break;
       }
+
     } catch (NotEnoughResourcesException e) {
       log.warn("Not enough resources", e);
       notEnoughResources(session);

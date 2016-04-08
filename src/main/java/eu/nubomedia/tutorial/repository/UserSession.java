@@ -51,7 +51,7 @@ public class UserSession {
 
   private final Logger log = LoggerFactory.getLogger(UserSession.class);
 
-  private RepositoryHandler repositoryHandler;
+  private RepositoryHandler handler;
   private RepositoryClient repositoryClient;
   private KurentoClient kurentoClient;
   private MediaPipeline mediaPipeline;
@@ -63,10 +63,10 @@ public class UserSession {
   private long stopTimestamp;
 
   public UserSession(String sessionId, RepositoryClient repositoryClient,
-      RepositoryHandler repositoryHandler) {
+      RepositoryHandler handler) {
     this.sessionId = sessionId;
     this.repositoryClient = repositoryClient;
-    this.repositoryHandler = repositoryHandler;
+    this.handler = handler;
   }
 
   public String startRecording(WebSocketSession session, String sdpOffer) {
@@ -159,7 +159,7 @@ public class UserSession {
       public void onEvent(ErrorEvent event) {
         log.info("ErrorEvent for session {}: {}", session.getId(), event.getDescription());
 
-        repositoryHandler.sendPlayEnd(session);
+        handler.sendPlayEnd(session);
         release();
       }
     });
@@ -168,7 +168,7 @@ public class UserSession {
       public void onEvent(EndOfStreamEvent event) {
         log.info("EndOfStreamEvent for session {}", session.getId());
 
-        repositoryHandler.sendPlayEnd(session);
+        handler.sendPlayEnd(session);
         release();
       }
     });
@@ -192,7 +192,7 @@ public class UserSession {
         JsonObject response = new JsonObject();
         response.addProperty("id", "iceCandidate");
         response.add("candidate", JsonUtils.toJsonObject(event.getCandidate()));
-        repositoryHandler.sendMessage(session, new TextMessage(response.toString()));
+        handler.sendMessage(session, new TextMessage(response.toString()));
       }
     });
 
