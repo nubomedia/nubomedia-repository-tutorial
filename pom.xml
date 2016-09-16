@@ -46,8 +46,8 @@
 
 	<properties>
 		<!-- Nubomedia -->
-		<nubomedia-media-client.version>1.0.2</nubomedia-media-client.version>
-		<nubomedia-repository-client.version>1.0</nubomedia-repository-client.version>
+		<nubomedia-media-client.version>6.5.0</nubomedia-media-client.version>
+		<nubomedia-repository-client.version>6.5.0</nubomedia-repository-client.version>
 
 		<!-- Main class -->
 		<start-class>eu.nubomedia.tutorial.repository.RepositoryApp</start-class>
