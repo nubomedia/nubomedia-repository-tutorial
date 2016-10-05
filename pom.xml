@@ -9,7 +9,7 @@
 	<parent>
 		<groupId>org.kurento</groupId>
 		<artifactId>kurento-parent-pom</artifactId>
-		<version>6.5.0</version>
+		<version>6.6.0</version>
 	</parent>
 
 	<name>NUBOMEDIA Tutorial - Repository</name>
@@ -17,8 +17,8 @@
 
 	<licenses>
 		<license>
-			<name>GNU Lesser General Public License</name>
-			<url>http://www.gnu.org/licenses/lgpl-2.1.txt</url>
+			<name>Apache License 2.0</name>
+			<url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
 			<distribution>repo</distribution>
 		</license>
 	</licenses>
@@ -27,13 +27,6 @@
 		<name>NUBOMEDIA</name>
 		<url>http://www.nubomedia.eu/</url>
 	</organization>
-
-	<scm>
-		<url>https://github.com/nubomedia/nubomedia-room-tutorial</url>
-		<connection>scm:git:https://github.com/nubomedia/nubomedia-room-tutorial</connection>
-		<developerConnection>scm:git://git@github.com:nubomedia/nubomedia-room-tutorial</developerConnection>
-		<tag>master</tag>
-	</scm>
 
 	<developers>
 		<developer>
