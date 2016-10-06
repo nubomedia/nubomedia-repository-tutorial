@@ -41,12 +41,10 @@
 		<!-- Nubomedia -->
 		<nubomedia-media-client.version>6.5.0</nubomedia-media-client.version>
 		<nubomedia-repository-client.version>6.5.0</nubomedia-repository-client.version>
-
-		<!-- Main class -->
-		<start-class>eu.nubomedia.tutorial.repository.RepositoryApp</start-class>
 	</properties>
 
 	<dependencies>
+		<!-- Spring -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
@@ -81,53 +79,37 @@
 			<artifactId>nubomedia-repository-client</artifactId>
 			<version>${nubomedia-repository-client.version}</version>
 		</dependency>
+
+		<!-- WebJars -->
+		<dependency>
+			<groupId>org.webjars</groupId>
+			<artifactId>webjars-locator</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.webjars.bower</groupId>
+			<artifactId>demo-console</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.webjars.bower</groupId>
+			<artifactId>adapter.js</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.webjars.bower</groupId>
+			<artifactId>jquery</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.webjars.bower</groupId>
+			<artifactId>ekko-lightbox</artifactId>
+		</dependency>
 	</dependencies>
 
 	<build>
+		<!-- Create a runnable JAR file -->
 		<plugins>
-			<!-- Create a runnable JAR file -->
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
-				<configuration>
-					<mainClass>${start-class}</mainClass>
-					<layout>ZIP</layout>
-				</configuration>
-				<executions>
-					<execution>
-						<goals>
-							<goal>repackage</goal>
-						</goals>
-					</execution>
-				</executions>
 			</plugin>
-
-			<!-- Call to bower install when compiling -->
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>exec-maven-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>exec-bower-install</id>
-						<phase>compile</phase>
-						<goals>
-							<goal>exec</goal>
-						</goals>
-						<configuration>
-							<executable>bower</executable>
-							<workingDirectory>${project.build.directory}/classes</workingDirectory>
-							<arguments>
-								<argument>install</argument>
-								<argument>--allow-root</argument>
-							</arguments>
-						</configuration>
-					</execution>
-				</executions>
-				<configuration>
-					<mainClass>${start-class}</mainClass>
-				</configuration>
-			</plugin>
-
 		</plugins>
 
 		<!-- Filtering resources (${label}) -->
@@ -141,13 +123,6 @@
 				<filtering>true</filtering>
 				<includes>
 					<include>banner.txt</include>
-				</includes>
-			</resource>
-			<resource>
-				<directory>.</directory>
-				<filtering>true</filtering>
-				<includes>
-					<include>bower.json</include>
 				</includes>
 			</resource>
 		</resources>
